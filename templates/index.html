@@ -5,30 +5,155 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MusicGen Web</title>
     <style>
-      body { font-family: Arial, Helvetica, sans-serif; margin: 2rem; }
-      textarea { width: 100%; height: 120px; }
-      .controls { margin-top: 1rem; }
+      body {
+        font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+        margin: 0;
+        background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        background: #fff;
+        box-shadow: 0 4px 24px rgba(60,72,88,0.12);
+        border-radius: 18px;
+        padding: 2.5rem 2rem 2rem 2rem;
+        max-width: 480px;
+        width: 100%;
+      }
+      h1 {
+        font-size: 1.6rem;
+        margin-bottom: 0.5rem;
+        color: #3b3b4f;
+        text-align: center;
+      }
+      p {
+        color: #5a5a6e;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+      label {
+        font-weight: 500;
+        color: #3b3b4f;
+      }
+      textarea {
+        width: 100%;
+        height: 120px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        padding: 0.75rem;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        resize: vertical;
+        box-sizing: border-box;
+        background: #f3f4f6;
+        transition: border-color 0.2s;
+      }
+      textarea:focus {
+        border-color: #6366f1;
+        outline: none;
+      }
+      .controls {
+        margin-top: 0.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .controls label {
+        margin: 0;
+        font-size: 0.98rem;
+      }
+      input[type="number"] {
+        width: 70px;
+        padding: 0.3rem 0.5rem;
+        border-radius: 6px;
+        border: 1px solid #d1d5db;
+        background: #f3f4f6;
+        font-size: 1rem;
+        margin-left: 0.3rem;
+      }
+      input[type="checkbox"] {
+        transform: scale(1.2);
+        margin-left: 0.3rem;
+      }
+      .actions {
+        margin-top: 1.2rem;
+        display: flex;
+        align-items: center;
+      }
+      #generate {
+        background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.7rem 1.6rem;
+        font-size: 1.08rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+        transition: background 0.2s, box-shadow 0.2s;
+      }
+      #generate:hover {
+        background: linear-gradient(90deg, #818cf8 0%, #6366f1 100%);
+        box-shadow: 0 4px 16px rgba(99,102,241,0.15);
+      }
+      #status {
+        margin-left: 1rem;
+        color: #6366f1;
+        font-weight: 500;
+      }
+      #result {
+        margin-top: 1.5rem;
+        text-align: center;
+      }
+      audio {
+        margin-top: 0.5rem;
+        width: 100%;
+        outline: none;
+      }
+      a {
+        color: #6366f1;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 1rem;
+        transition: color 0.2s;
+      }
+      a:hover {
+        color: #4338ca;
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
-    <h1>MusicGen — Convert Your Words Into Captivating Melodies</h1>
-    <p>Enter a text prompt and click Generate. This will call the backend model and return a WAV file.</p>
+    <div class="container">
+      <h1>MusicGen — Convert Your Words Into Captivating Melodies</h1>
+      <p>Enter a text prompt and click <b>Generate</b>. The backend model will return a WAV file for your melody.</p>
 
-    <label for="prompt">Prompt</label>
-    <textarea id="prompt">A relaxed lo-fi hip-hop beat with soft piano and vinyl crackle</textarea>
+      <label for="prompt">Prompt</label>
+      <textarea id="prompt">A relaxed lo-fi hip-hop beat with soft piano and vinyl crackle</textarea>
 
-    <div class="controls">
-      <label>Max new tokens: <input id="max_new_tokens" type="number" value="256" min="1" max="3000"/></label>
-      <label style="margin-left:1rem">Guidance scale: <input id="guidance_scale" type="number" value="3" step="0.1" min="0" max="10"/></label>
-      <label style="margin-left:1rem">Sampling: <input id="do_sample" type="checkbox" checked/></label>
+      <div class="controls">
+        <label>Max new tokens:
+          <input id="max_new_tokens" type="number" value="256" min="1" max="3000"/>
+        </label>
+        <label>Guidance scale:
+          <input id="guidance_scale" type="number" value="3" step="0.1" min="0" max="10"/>
+        </label>
+        <label>Sampling:
+          <input id="do_sample" type="checkbox" checked/>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button id="generate">Generate</button>
+        <span id="status"></span>
+      </div>
+
+      <div id="result"></div>
     </div>
-
-    <div style="margin-top:1rem">
-      <button id="generate">Generate</button>
-      <span id="status" style="margin-left:1rem"></span>
-    </div>
-
-    <div id="result" style="margin-top:1.5rem"></div>
 
     <script>
       document.getElementById('generate').addEventListener('click', async () => {
